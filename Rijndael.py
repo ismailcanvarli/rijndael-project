@@ -1,31 +1,47 @@
 import copy
 import binascii
 
+# Rijndael sınıfı oluşturuldu
 class Rijndael(object):
+    
+    # Sınıf değişkenleri oluşturuldu
     @classmethod
     def create(cls):
-
+        
+        # RIJNDAEL_CREATED değişkeni oluşturuldu    
         if hasattr(cls, "RIJNDAEL_CREATED"):
             return
 
-        # [keysize][block_size]
-        cls.num_rounds = {16: {16: 10, 24: 12, 32: 14}, 24: {16: 12, 24: 12, 32: 14}, 32: {16: 14, 24: 14, 32: 14}}
+        # [keysize][block_size] anahatar ve blok boyutları belirlendi 
+        cls.num_rounds = {
+            16: {16: 10, 24: 12, 32: 14}, 
+            24: {16: 12, 24: 12, 32: 14}, 
+            32: {16: 14, 24: 14, 32: 14}
+        }
 
-        cls.shifts = [[[0, 0], [1, 3], [2, 2], [3, 1]],
-                [[0, 0], [1, 5], [2, 4], [3, 3]],
-                [[0, 0], [1, 7], [3, 5], [4, 4]]]
+        # S-boxes ve inverse S-boxes oluşturuldu
+        cls.shifts = [
+            [[0, 0], [1, 3], [2, 2], [3, 1]],
+            [[0, 0], [1, 5], [2, 4], [3, 3]],
+            [[0, 0], [1, 7], [3, 5], [4, 4]]
+        ]
 
-        A = [[1, 1, 1, 1, 1, 0, 0, 0],
+        # S-boxes ve inverse S-boxes oluşturuldu
+        A = [
+            [1, 1, 1, 1, 1, 0, 0, 0],
             [0, 1, 1, 1, 1, 1, 0, 0],
             [0, 0, 1, 1, 1, 1, 1, 0],
             [0, 0, 0, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1, 1, 1, 1],
             [1, 1, 0, 0, 0, 1, 1, 1],
             [1, 1, 1, 0, 0, 0, 1, 1],
-            [1, 1, 1, 1, 0, 0, 0, 1]]
+            [1, 1, 1, 1, 0, 0, 0, 1]
+        ]
 
         # produce log and alog tables, needed for multiplying in the
         # field GF(2^m) (generator = 3)
+        # Log kanalı oluşturuldu ve alog tablosu oluşturuldu
+        # GF(2^m) alanında çarpmak için gereklidir (üreteç = 3)
         alog = [1]
         for i in range(255):
             j = (alog[-1] << 1) ^ alog[-1]
@@ -38,12 +54,14 @@ class Rijndael(object):
             log[alog[i]] = i
 
         # multiply two elements of GF(2^m)
+        # Çarpma işlemi GF(2^m) alanında gerçekleştirilir
         def mul(a, b):
             if a == 0 or b == 0:
                 return 0
             return alog[(log[a & 0xFF] + log[b & 0xFF]) % 255]
 
         # substitution box based on F^{-1}(x)
+        # Substitution kutusu oluşturuldu ve tersi alındı
         box = [[0] * 8 for i in range(256)]
         box[1][7] = 1
         for i in range(2, 256):
@@ -54,6 +72,7 @@ class Rijndael(object):
         B = [0, 1, 1, 0, 0, 0, 1, 1]
 
         # affine transform:  box[i] <- B + A*box[i]
+        # Doğrusal dönüşüm: box[i] <- B + A*box[i]
         cox = [[0] * 8 for i in range(256)]
         for i in range(256):
             for t in range(8):
@@ -62,6 +81,7 @@ class Rijndael(object):
                     cox[i][t] ^= A[t][j] * box[i][j]
 
         # cls.S-boxes and inverse cls.S-boxes
+        # S-boxes ve tersi S-boxes oluşturuldu
         cls.S =  [0] * 256
         cls.Si = [0] * 256
         for i in range(256):
@@ -71,6 +91,7 @@ class Rijndael(object):
             cls.Si[cls.S[i] & 0xFF] = i
 
         # T-boxes
+        # T-boxes oluşturuldu
         G = [[2, 1, 1, 3],
             [3, 2, 1, 1],
             [1, 3, 2, 1],
@@ -150,6 +171,7 @@ class Rijndael(object):
             cls.U4.append(mul4(t, iG[3]))
 
         # round constants
+        # round sabitleri oluşturuldu
         cls.rcon = [1]
         r = 1
         for t in range(1, 30):
@@ -161,6 +183,7 @@ class Rijndael(object):
     def __init__(self, key, block_size = 16):
 
         # create common meta-instance infrastructure
+        # ortak meta-instance altyapısı oluşturuldu
         self.create()
 
         if block_size != 16 and block_size != 24 and block_size != 32:
@@ -172,19 +195,23 @@ class Rijndael(object):
         ROUNDS = Rijndael.num_rounds[len(key)][block_size]
         BC = int(block_size / 4)
         # encryption round keys
+        # şifreleme tur anahtarları
         Ke = [[0] * BC for i in range(ROUNDS + 1)]
         # decryption round keys
+        # şifre çözme tur anahtarları
         Kd = [[0] * BC for i in range(ROUNDS + 1)]
         ROUND_KEY_COUNT = (ROUNDS + 1) * BC
         KC = int(len(key) / 4)
 
         # copy user material bytes into temporary ints
+        # kullanıcı materyal baytlarını geçici tamsayılara kopyala
         tk = []
         for i in range(0, KC):
             tk.append((ord(key[i * 4]) << 24) | (ord(key[i * 4 + 1]) << 16) |
                 (ord(key[i * 4 + 2]) << 8) | ord(key[i * 4 + 3]))
 
         # copy values into round key arrays
+        # değerleri tur anahtar dizilerine kopyala
         t = 0
         j = 0
         while j < KC and t < ROUND_KEY_COUNT:
@@ -196,6 +223,7 @@ class Rijndael(object):
         rconpointer = 0
         while t < ROUND_KEY_COUNT:
             # extrapolate using phi (the round key evolution function)
+            # phi kullanarak ekstrapole et (tur anahtar evrim fonksiyonu)
             tt = tk[KC - 1]
             tk[0] ^= (Rijndael.S[(tt >> 16) & 0xFF] & 0xFF) << 24 ^  \
                      (Rijndael.S[(tt >>  8) & 0xFF] & 0xFF) << 16 ^  \
@@ -217,6 +245,7 @@ class Rijndael(object):
                 for i in range(int(KC / 2) + 1, KC):
                     tk[i] ^= tk[i-1]
             # copy values into round key arrays
+            # değerleri tur anahtar dizilerine kopyala
             j = 0
             while j < KC and t < ROUND_KEY_COUNT:
                 Ke[int(t / BC)][t % BC] = tk[j]
@@ -224,6 +253,7 @@ class Rijndael(object):
                 j += 1
                 t += 1
         # inverse MixColumn where needed
+        # gerekli olduğunda ters MixColumn
         for r in range(1, ROUNDS):
             for j in range(BC):
                 tt = Kd[r][j]
@@ -234,6 +264,8 @@ class Rijndael(object):
         self.Ke = Ke
         self.Kd = Kd
 
+    # encrypt/decrypt a block of text
+    # bir blok metni şifreleme/şifre çözme
     def encrypt(self, plaintext):
         if len(plaintext) != self.block_size:
             raise ValueError('wrong block length, expected ' + str(self.block_size) + ' got ' + str(len(plaintext)))
@@ -252,14 +284,17 @@ class Rijndael(object):
         s3 = Rijndael.shifts[Rijndael.SC][3][0]
         a = [0] * BC
         # temporary work array
+        # geçici çalışma dizisi
         t = []
         # plaintext to ints + key
+        # metin anahtarlarına tamsayılar
         for i in range(BC):
             t.append((ord(plaintext[i * 4    ]) << 24 |
                       ord(plaintext[i * 4 + 1]) << 16 |
                       ord(plaintext[i * 4 + 2]) <<  8 |
                       ord(plaintext[i * 4 + 3])        ) ^ Ke[0][i])
         # apply round transforms
+        # tur dönüşümlerini uygula
         for r in range(1, ROUNDS):
             for i in range(BC):
                 a[i] = (Rijndael.T1[(t[ i           ] >> 24) & 0xFF] ^
@@ -268,6 +303,7 @@ class Rijndael(object):
                         Rijndael.T4[ t[(i + s3) % BC]        & 0xFF]  ) ^ Ke[r][i]
             t = copy.deepcopy(a)
         # last round is special
+        # son tur özeldir
         result = []
         for i in range(BC):
             tt = Ke[ROUNDS][i]
@@ -276,10 +312,12 @@ class Rijndael(object):
             result.append((Rijndael.S[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((Rijndael.S[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
        # Convert the result to hexadecimal
+       # Sonucu onaltılığa dönüştür
         return binascii.hexlify(''.join(list(map(chr, result))).encode()).decode()
 
     def decrypt(self, ciphertext):
         # Convert the hexadecimal back to binary
+        # Onaltılığı tekrar ikiliye dönüştür
         ciphertext = binascii.unhexlify(ciphertext.encode()).decode()
         
         if len(ciphertext) != self.block_size:
@@ -299,14 +337,17 @@ class Rijndael(object):
         s3 = Rijndael.shifts[Rijndael.SC][3][1]
         a = [0] * BC
         # temporary work array
+        # geçici çalışma dizisi
         t = [0] * BC
         # ciphertext to ints + key
+        # şifreli metin anahtarlarına tamsayılar
         for i in range(BC):
             t[i] = (ord(ciphertext[i * 4    ]) << 24 |
                     ord(ciphertext[i * 4 + 1]) << 16 |
                     ord(ciphertext[i * 4 + 2]) <<  8 |
                     ord(ciphertext[i * 4 + 3])        ) ^ Kd[0][i]
         # apply round transforms
+        # tur dönüşümlerini uygula
         for r in range(1, ROUNDS):
             for i in range(BC):
                 a[i] = (Rijndael.T5[(t[ i           ] >> 24) & 0xFF] ^
@@ -315,6 +356,7 @@ class Rijndael(object):
                         Rijndael.T8[ t[(i + s3) % BC]        & 0xFF]  ) ^ Kd[r][i]
             t = copy.deepcopy(a)
         # last round is special
+        # son tur özeldir
         result = []
         for i in range(BC):
             tt = Kd[ROUNDS][i]
