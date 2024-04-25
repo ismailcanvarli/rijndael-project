@@ -366,9 +366,10 @@ class Rijndael(object):
             result.append((Rijndael.Si[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
         return ''.join(list(map(chr, result)))
 
-        
+"""        
 r = Rijndael("1234567891234527", block_size = 16)
 ciphertext = r.encrypt("1234567891234527")
 plaintext = r.decrypt(ciphertext)
 print (plaintext)
 print (ciphertext)
+"""
