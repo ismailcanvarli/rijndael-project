@@ -1,5 +1,5 @@
-import copy
-import binascii
+import copy # copy modülü eklendi. Kopyalama işlemleri için kullanılır.
+import binascii # binascii modülü eklendi. Sadece hexadecimal verileri işlemek için kullanılır.
 
 # Rijndael sınıfı oluşturuldu
 class Rijndael(object):
@@ -370,7 +370,8 @@ class Rijndael(object):
             result.append((Rijndael.Si[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
         return ''.join(list(map(chr, result)))
 
-"""        
+"""
+#Bu kısım test amaçlı yazılmıştır.        
 r = Rijndael("1234567891234527", block_size = 16)
 ciphertext = r.encrypt("1234567891234527")
 plaintext = r.decrypt(ciphertext)

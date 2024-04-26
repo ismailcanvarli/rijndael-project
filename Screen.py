@@ -5,12 +5,12 @@ from Rijndael import Rijndael
 # 16, 24 veya 32 byte key için blok boyutu sırasıyla 16, 24 veya 32 olur.
 def get_block_size(key):
     length = len(key)
-    if length % 16 == 0:
-        return 16
+    if length % 32 == 0:
+        return 32
     elif length % 24 == 0:
         return 24
-    elif length % 32 == 0:
-        return 32
+    elif length % 16 == 0:
+        return 16
     else:
         return 0
 
@@ -19,14 +19,20 @@ def encrypt():
     block_size = get_block_size(key)
     r = Rijndael(key, block_size = block_size)
     ciphertext = r.encrypt(text_entry.get())
+    result_text.insert(tk.END, "Anahtar: " + key + "\n")
+    result_text.insert(tk.END, "Metin: " + text_entry.get() + "\n")
     result_text.insert(tk.END, "Şifreli Metin: " + ciphertext + "\n")
+    result_text.insert(tk.END, "\n")  # Boş satır ekle
 
 def decrypt():
     key = key_entry.get()
     block_size = get_block_size(key)
     r = Rijndael(key, block_size = block_size)
     plaintext = r.decrypt(text_entry.get())
+    result_text.insert(tk.END, "Anahtar: " + key + "\n")
+    result_text.insert(tk.END, "Şifreli Metin: " + text_entry.get() + "\n")
     result_text.insert(tk.END, "Çözülmüş Metin: " + plaintext + "\n")
+    result_text.insert(tk.END, "\n")  # Boş satır ekle
 
 window = tk.Tk()
 window.title("Rijndael Şifreleme")
