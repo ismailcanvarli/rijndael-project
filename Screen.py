@@ -1,13 +1,30 @@
 import tkinter as tk
 from Rijndael import Rijndael
 
+# Rijndael sınıfı, key'in boyutuna göre blok boyutunu belirler.
+# 16, 24 veya 32 byte key için blok boyutu sırasıyla 16, 24 veya 32 olur.
+def get_block_size(key):
+    length = len(key)
+    if length % 16 == 0:
+        return 16
+    elif length % 24 == 0:
+        return 24
+    elif length % 32 == 0:
+        return 32
+    else:
+        return 0
+
 def encrypt():
-    r = Rijndael(key_entry.get(), block_size = 16)
+    key = key_entry.get()
+    block_size = get_block_size(key)
+    r = Rijndael(key, block_size = block_size)
     ciphertext = r.encrypt(text_entry.get())
     result_text.insert(tk.END, "Şifreli Metin: " + ciphertext + "\n")
 
 def decrypt():
-    r = Rijndael(key_entry.get(), block_size = 16)
+    key = key_entry.get()
+    block_size = get_block_size(key)
+    r = Rijndael(key, block_size = block_size)
     plaintext = r.decrypt(text_entry.get())
     result_text.insert(tk.END, "Çözülmüş Metin: " + plaintext + "\n")
 

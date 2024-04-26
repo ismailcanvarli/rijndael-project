@@ -12,7 +12,8 @@ class Rijndael(object):
         if hasattr(cls, "RIJNDAEL_CREATED"):
             return
 
-        # [keysize][block_size] anahatar ve blok boyutları belirlendi 
+        # [keysize][block_size] anahatar ve blok boyutları belirlendi
+        # Anahtar boyutu 16, 24 ve 32 olabilir. 
         cls.num_rounds = {
             16: {16: 10, 24: 12, 32: 14}, 
             24: {16: 12, 24: 12, 32: 14}, 
@@ -180,6 +181,9 @@ class Rijndael(object):
 
         cls.RIJNDAEL_CREATED = True
 
+    # Anahtar boyutu 16, 24 ve 32 olabilir.
+    # Anahtar boyutu default olarak 16 alındı.
+    # Anahtar boyutu 16 ise 10 tur, 24 ise 12 tur, 32 ise 14 tur yapılır. 
     def __init__(self, key, block_size = 16):
 
         # create common meta-instance infrastructure
