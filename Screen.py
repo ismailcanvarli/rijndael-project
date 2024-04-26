@@ -32,20 +32,39 @@ window = tk.Tk()
 window.title("Rijndael Şifreleme")
 window.geometry("700x700")
 
-key_label = tk.Label(window, text="Anahtar: (Key)", font=("Times New Roman", 12))
+# Anahtar giriş alanı
+key_label = tk.Label(window, text="Anahtar (Key) 16, 24 veya 32 karakter olmalıdır", font=("Times New Roman", 12))
 key_label.pack(pady=5)
+
+# Anahtar girişi için bir Entry oluştur
 key_entry = tk.Entry(window, width=50, font=("Times New Roman", 12))
 key_entry.pack(pady=15)
 
-text_label = tk.Label(window, text="Metin: (Plain or Chipper text)", font=("Times New Roman", 12))
+# Metin uzunluğunu tutacak bir StringVar oluştur
+text_length = tk.StringVar()
+text_length.set("Anahtar uzunluğu: "+'0')
+
+# Metin uzunluğunu gösterecek bir Label oluştur
+length_label = tk.Label(window, textvariable=text_length, font=("Times New Roman", 12))
+length_label.pack(pady=5)
+
+# Her tuşa basıldığında metin uzunluğunu güncelle
+def update_length(event):
+    text_length.set("Anahtar uzunluğu: " + str(len(key_entry.get())))
+
+key_entry.bind('<KeyRelease>', update_length)
+
+# Metin giriş alanı
+text_label = tk.Label(window, text="Metin (Plain or Chipper text)", font=("Times New Roman", 12))
 text_label.pack(pady=5)
 text_entry = tk.Entry(window, width=50, font=("Times New Roman", 12))
 text_entry.pack(pady=15)
 
-encrypt_button = tk.Button(window, text="Şifrele", command=encrypt, width=10, font=("Times New Roman", 12,"bold"))
+#Encrypt ve Decrypt butonları
+encrypt_button = tk.Button(window, text="Şifrele (Encrypt)", command=encrypt, width=20, font=("Times New Roman", 12,"bold"))
 encrypt_button.pack(pady=5)
 
-decrypt_button = tk.Button(window, text="Şifre Çöz", command=decrypt, width=10, font=("Times New Roman", 12, "bold"))
+decrypt_button = tk.Button(window, text="Şifre Çöz (Decrypt) ", command=decrypt, width=20, font=("Times New Roman", 12, "bold"))
 decrypt_button.pack(pady=5)
 
 result_text = tk.Text(window)
