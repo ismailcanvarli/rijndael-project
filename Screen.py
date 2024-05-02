@@ -47,7 +47,7 @@ def pad_data(data, block_size):
     return padded_data
 
 window = tk.Tk()
-window.title("Rijndael Şifreleme")
+window.title("Rijndael Şifreleme (Rijndael Encryption)")
 window.geometry("700x700")
 
 # Anahtar giriş alanı
@@ -60,7 +60,7 @@ key_entry.pack(pady=15)
 
 # Metin uzunluğunu tutacak bir StringVar oluştur
 text_length = tk.StringVar()
-text_length.set("Anahtar uzunluğu: "+'0')
+text_length.set("Anahtar uzunluğu (Key Size): "+'0')
 
 # Metin uzunluğunu gösterecek bir Label oluştur
 length_label = tk.Label(window, textvariable=text_length, font=("Times New Roman", 12))
@@ -68,7 +68,7 @@ length_label.pack(pady=5)
 
 # Her tuşa basıldığında metin uzunluğunu güncelle
 def update_length(event):
-    text_length.set("Anahtar uzunluğu: " + str(len(key_entry.get())))
+    text_length.set("Anahtar uzunluğu (Key Size): " + str(len(key_entry.get())))
 
 key_entry.bind('<KeyRelease>', update_length)
 
