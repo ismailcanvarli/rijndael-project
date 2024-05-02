@@ -1,30 +1,26 @@
-Rijndael şifrelemesi, modern AES (Advanced Encryption Standard) 
-şifrelemesinin temelini oluşturan bir blok şifreleme algoritmasıdır. 
-Belçikalı iki kriptograf, Joan Daemen ve Vincent Rijmen tarafından geliştirilmiştir ve 
-bu nedenle algoritmanın adı bu iki yazarın soyadlarının birleşiminden oluşmaktadır.
+Rijndael encryption is a block cipher algorithm that forms the basis of the modern AES (Advanced Encryption Standard) encryption. 
+It was developed by two Belgian cryptographers, Joan Daemen and Vincent Rijmen, hence the algorithm's name is a combination of the surnames of these two authors.
 
-Rijndael, giriş (plaintext), çıkış (ciphertext) ve anahtar boyutlarının 
-128, 192 veya 256 bit olabileceği bir blok şifreleme algoritmasıdır. 
-AES standardı, giriş ve çıkış boyutunu 128 bit olarak sabitlerken, 
-anahtar boyutunu 128, 192 veya 256 bit olarak seçme seçeneği sunar.
-Yani anahtar boyutu 16, 24 veya 32 kaarkterden oluşabilir.
+Rijndael is a block cipher algorithm where the input (plaintext), output (ciphertext), and key sizes can be 128, 192, or 256 bits. 
+While the AES standard fixes the input and output size to 128 bits, it offers the option to choose the key size as 128, 192, or 256 bits.
+This means the key size can consist of 16, 24, or 32 characters.
 
-Rijndael şifrelemesi, bir dizi dönüşümü birleştiren birkaç turda çalışır. 
-Bu dönüşümler SubBytes, ShiftRows, MixColumns ve AddRoundKey''dir.
+Rijndael encryption operates in several rounds, each consisting of a series of transformations. 
+These transformations are SubBytes, ShiftRows, MixColumns, and AddRoundKey.
 
-SubBytes: Her bayt, bir S-Box adı verilen önceden belirlenmiş bir tablo kullanılarak başka bir baytla değiştirilir. 
-Bu, şifrelemenin karışıklığını (confusion) sağlar.
+SubBytes: Each byte is replaced by another byte using a predefined table called an S-Box. 
+This provides confusion in encryption.
 
-ShiftRows: Bloktaki baytlar, belirli bir desene göre kaydırılır. 
-Bu, şifrelemenin yayılımını (diffusion) sağlar.
+ShiftRows: Bytes in the block are shifted according to a specific pattern.
+This provides diffusion in encryption.
 
-MixColumns: Her sütun, bir matris çarpımı kullanılarak dönüştürülür. 
-Bu da yayılımı sağlar.
+MixColumns: Each column is transformed using a matrix multiplication. 
+This also provides diffusion.
 
-AddRoundKey: Anahtarın bir kısmı, bloğa bir XOR işlemi ile eklenir. 
-Bu, anahtarın şifreleme üzerindeki etkisini sağlar.
+AddRoundKey: A portion of the key is added to the block via an XOR operation. 
+This contributes to the effect of the key on encryption.
 
-Bu dönüşümler, belirlenen tur sayısı boyunca tekrarlanır. Tur sayısı, anahtar boyutuna bağlıdır: 
-128 bit için 10 tur, 192 bit için 12 tur ve 256 bit için 14 tur.
+These transformations are repeated for a specified number of rounds. 
+The number of rounds depends on the key size: 10 rounds for 128 bits, 12 rounds for 192 bits, and 14 rounds for 256 bits.
 
-Rijndael, hızı ve güvenliği nedeniyle geniş çapta kabul görmüştür ve birçok modern sistemde ve protokolde kullanılır.
+Rijndael has been widely accepted due to its speed and security and is used in many modern systems and protocols.
